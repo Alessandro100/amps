@@ -170,7 +170,7 @@ namespace LineManipulation
 
         public void CollisionCalculate(Collision2D col)
         {
-            print("CollisionCalculate CollisionCalculate CollisionCalculate CollisionCalculate");
+            print("CollisionCalculate CollisionCalculate CollisionCalculate CollisionCalculate test");
             //col.
 
             foreach (ContactPoint2D contact in col.contacts)

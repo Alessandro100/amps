@@ -13,7 +13,7 @@ public class CircleLineSegmentCollider : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        lineSegment = GetComponent<CircleLineSegment>(); // test
+        lineSegment = GetComponent<CircleLineSegment>();
         polygonCollider2D = GetComponent<PolygonCollider2D>();
     }
 
