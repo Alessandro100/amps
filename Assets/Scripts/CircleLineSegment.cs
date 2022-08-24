@@ -10,6 +10,8 @@ public class CircleLineSegment : MonoBehaviour
     double travelAngle0;
     double travelAngle1;
     float speed = 0.3f;
+    private float opacity = 1f;
+    public float opacityDecay = 0.1f;
     LineRenderer line;
     PolygonCollider2D polygonCollider2D;
 
@@ -21,11 +23,27 @@ public class CircleLineSegment : MonoBehaviour
 
     void LateUpdate()
     {
-        float timeChange = Time.deltaTime;
-        float distanceToTravel = timeChange * speed;
-        MoveLine(distanceToTravel);
-        List<Vector2> colliderPoints = CalculateColliderPoints();
-        polygonCollider2D.SetPath(0, colliderPoints.ConvertAll(p => (Vector2)transform.InverseTransformPoint(p)));
+        if(line != null)
+        {
+            float timeChange = Time.deltaTime;
+            float distanceToTravel = timeChange * speed;
+            MoveLine(distanceToTravel);
+            List<Vector2> colliderPoints = CalculateColliderPoints();
+            polygonCollider2D.SetPath(0, colliderPoints.ConvertAll(p => (Vector2)transform.InverseTransformPoint(p)));
+            //polygonCollider2D.SetPath(0, colliderPoints);
+            opacity -= timeChange * opacityDecay;
+            Color c = new Color(1f, 1f, 1f, opacity);
+            line.startColor = c;
+            line.endColor = c;
+            if (opacity <= 0)
+            {
+                // destroy object -- hmmm
+                print("DESSS");
+                //Destroy(polygonCollider2D);
+                //Destroy(line);
+            }
+        }
+
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -60,14 +78,16 @@ public class CircleLineSegment : MonoBehaviour
         line.AddComponent<LineRenderer>();
 
         Rigidbody2D rb = line.AddComponent<Rigidbody2D>();
-        rb.bodyType = RigidbodyType2D.Dynamic;
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.useFullKinematicContacts = true;
+        rb.gravityScale = 0;
         rb.velocity = Vector2.zero;
         //rb.isKinematic = true;
         //rb.useFullKinematicContacts = true;
         polygonCollider2D = line.AddComponent<PolygonCollider2D>();
         LineRenderer lr = line.GetComponent<LineRenderer>();
         lr.material = new Material(Shader.Find("Sprites/Default"));
-        lr.numCapVertices = 4;
+        //lr.numCapVertices = 4;
         float alpha = 1f;
         Gradient gradient = new Gradient();
         gradient.SetKeys(
@@ -100,13 +120,13 @@ public class CircleLineSegment : MonoBehaviour
 
     public float GetWidth()
     {
-        return line.startWidth;
+        return 0;
     }
 
     private List<Vector2> CalculateColliderPoints()
     {
         //Get The Width of the Line
-        float width = GetWidth();
+        float width = line.startWidth;
         Vector3[] positions = GetPositions();
 
         // m = (y2 - y1) / (x2 - x1)

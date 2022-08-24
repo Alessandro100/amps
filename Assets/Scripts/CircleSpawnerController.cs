@@ -8,7 +8,7 @@ using LineManipulation;
 public class CircleSpawnerController : MonoBehaviour
 {
     //private LineCollider lc;
-    private LineCircle circc;
+    private LineCircle lineCircle;
 
     // Start is called before the first frame update
     void Start()
@@ -19,30 +19,19 @@ public class CircleSpawnerController : MonoBehaviour
         rb.velocity = Vector2.zero;
         rb.isKinematic = true;
         rb.useFullKinematicContacts = true;
-        //lc = GetComponent<LineCollider>();
-        circc = GetComponent<LineCircle>();
+        lineCircle = GetComponent<LineCircle>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        //float timeChange = Time.deltaTime;
+        // find a way to spawn a lineCircle every 2 seconds
     }
 
     void OnCollisionEnter2D()
     {
         print("COLLIDE $$$$$");
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        print("TRIGGER TRIGGER TRIGGER");
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit))
-        {
-            print("Point of contact: " + hit.point);
-            Debug.Log("Point of contact: " + hit.point);
-        }
     }
 
     void OnCollisionEnter2D(Collision collision)

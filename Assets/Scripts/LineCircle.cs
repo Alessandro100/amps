@@ -3,17 +3,56 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-class NodeData
+// NEXT STEP -> DETECTING COLLISIONS!
+
+class LineData
 {
-    public Vector2 position;
-    public double travelingAngle;
-    public NodeData(Vector2 position, double travelingAngle)
+    private int _from;
+    private int _to;
+    private float _speed = 0.3f;
+    private float _distanceTravelled = 0f;
+    private float _opacity = 1;
+    private float _opacityDecay = 0.1f;
+    LineRenderer _line;
+
+    // getters
+    public int from => _from;
+    public int to => _to;
+    public float speed => _speed;
+    public float distanceTravelled => _distanceTravelled;
+    public float opacity => _opacity;
+    public LineRenderer line => _line;
+
+
+    public LineData(int from, int to, LineRenderer line, float distanceTravelled, float opacity, float speed = 0.3f)
     {
-        this.position = position;
-        this.travelingAngle = travelingAngle; // in radiens
+        this._from = from;
+        this._to = to;
+        this._line = line;
+        this._distanceTravelled = distanceTravelled;
+        this._speed = speed;
+        this._opacity = opacity;
     }
 
+    public void AddDistanceTravelled(float distance)
+    {
+        _distanceTravelled += distance;
+    }
+
+    public void SetOpacityDecay(float timeChange)
+    {
+        _opacity -= timeChange * _opacityDecay;
+        Color c = new Color(1f, 1f, 1f, _opacity);
+        line.startColor = c;
+        line.endColor = c;
+    }
+
+    public void SetLine(LineRenderer line)
+    {
+        this._line = line;
+    }
 }
+
 
 namespace LineManipulation
 {
@@ -22,17 +61,21 @@ namespace LineManipulation
     {
         public float speed = 0.3f; // 0.3f per second
 
-        private LineRenderer circleLine;
-        //private Vector3[] circlePoints; // I'm pretty sure I'm going to have to save position and direction
-        private List<NodeData> circlePoints;
+        private List<LineData> linesData;
+        private int numberOfPoints = 50;
+        private float initialDistance = 1f;
         private List<CircleLineSegment> lineSegments;
+
+        //TO REMOVE
+        float distanceTest = 0;
+        bool hasHappened = false;
 
         // Start is called before the first frame update
         void Awake()
         {
-            ///circlePoints = GenerateCirclePoints(transform.position);
-            //circleLine = DrawCircle();
-            lineSegments = DrawCircleV2();
+            LineData initialCircle = GenerateSegments(0, numberOfPoints + 1, initialDistance, 1f);
+            initialCircle.line.loop = true;
+            linesData = new List<LineData> { initialCircle };
         }
 
         // Update is called once per frame
@@ -40,7 +83,57 @@ namespace LineManipulation
         {
             //float timeChange = Time.deltaTime;
             //float distanceToTravel = timeChange * speed;
+            
             //MoveCircle(distanceToTravel);
+            float timeChange = Time.deltaTime;
+            float distance = timeChange * 0.3f;
+            distanceTest += distance;
+
+            // this is all a test here
+            if(distanceTest > 1f && !hasHappened)
+            {
+                hasHappened = true;
+                //SIM W/POITN
+                List<double> killNodes = new List<double>();
+                Vector2 SIMULATEDCOLLISION = new Vector2(-3, -3); // will get this from the collision
+                double index = FindIndexOfCollision(SIMULATEDCOLLISION);
+                killNodes.Add(index);
+                List<LineData> newLinesData = GenerateLinesPostCollision(killNodes);
+                Destroy(linesData[0].line.gameObject);
+                linesData.Clear();
+                linesData = new List<LineData>();
+                linesData.AddRange(newLinesData);
+            }
+            MoveSegments();
+        }
+
+        double FindIndexOfCollision(Vector2 collisionPoint)
+        {
+            float xDiff = collisionPoint.x - transform.position.x;
+            float yDiff = collisionPoint.y - transform.position.y;
+            double angle = Math.Atan2(yDiff, xDiff) + (2 * Math.PI);
+            double anglePerIndex = 2 * Math.PI / numberOfPoints;
+            return angle / anglePerIndex;
+        }
+
+        List<LineData> GenerateLinesPostCollision(List<double> killNodes)
+        {
+            List<LineData> lineDataSegments = new List<LineData>();
+            int from = 0;
+            int to;
+            foreach (double killNode in killNodes)
+            {
+                to = (int)Math.Floor(killNode);
+                if(from != to)
+                {
+                    LineData lineDataSegment = GenerateSegments(from, to, linesData[0].distanceTravelled, linesData[0].opacity);
+                    lineDataSegments.Add(lineDataSegment);
+                }
+                from = (int)Math.Ceiling(killNode);
+            }
+            LineData finalLineDataSegment = GenerateSegments(from, numberOfPoints + 1, linesData[0].distanceTravelled, linesData[0].opacity);
+            lineDataSegments.Add(finalLineDataSegment);
+            return lineDataSegments;
         }
 
         List<CircleLineSegment> DrawCircleV2()
@@ -72,9 +165,8 @@ namespace LineManipulation
             return circleLineSegments;
         }
 
-        LineRenderer DrawCircle()
+        LineData GenerateSegments(int from, int to, float distanceTravelled, float initialOpacity) //drawcircleV3
         {
-            print("DRAW $$$$$$$$$$");
             GameObject line = new GameObject();
             line.AddComponent<LineRenderer>();
             Rigidbody2D rb = line.AddComponent<Rigidbody2D>();
@@ -84,90 +176,76 @@ namespace LineManipulation
             rb.useFullKinematicContacts = true;
             LineRenderer lr = line.GetComponent<LineRenderer>();
             lr.material = new Material(Shader.Find("Sprites/Default"));
-            lr.positionCount = circlePoints.Count;
-            float alpha = 0f;
-            Gradient gradient = new Gradient();
-            gradient.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.black, 0.0f), new GradientColorKey(Color.white, 1.0f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(alpha, 0.0f), new GradientAlphaKey(alpha, 1.0f) }
-            );
-            lr.colorGradient = gradient;
+            lr.positionCount = to - from;
             AnimationCurve curve = new AnimationCurve();
             curve.AddKey(0.0f, 0.1f);
             lr.widthCurve = curve;
-            for (int i = 0; i < circlePoints.Count; i++)
+            // logic of setting the points here
+            double anglePerSegment = 2 * Math.PI / numberOfPoints; // in radians
+            int indexCount = 0;
+            for (int i = from; i < to; i++)
             {
-                //print(i.ToString() + ": " + circlePoints[i].ToString());
-                lr.SetPosition(i, circlePoints[i].position);
+                double pointAngle = anglePerSegment * i;
+                float y = transform.position.y + ((float)Math.Sin(pointAngle) * distanceTravelled);
+                float x = transform.position.x + ((float)Math.Cos(pointAngle) * distanceTravelled);
+                Vector3 newPosition = new Vector3(x, y, 0);
+                lr.SetPosition(indexCount, newPosition);
+                indexCount++;
             }
-            //lr.loop = true;
-            //GameObject.Destroy(myLine, duration);
-            return lr;
+            Color c = new Color(1f, 1f, 1f, initialOpacity);
+            lr.startColor = c;
+            lr.endColor = c;
+            return new LineData(from, to, lr, distanceTravelled, initialOpacity);
         }
 
-        List<NodeData> GenerateCirclePoints(Vector3 objectPosition)
+        public void MoveSegments()
         {
-            int numberOfPoints = 25;
-            List<NodeData> pointCoordinates = new List<NodeData>();
-            double angle = 2 * Math.PI / numberOfPoints; // in radians
-            float initialLength = 1f;
-            // iteration
-            for (int i = 0; i < numberOfPoints; i++)
+            double anglePerSegment = 2 * Math.PI / numberOfPoints; // in radians
+            Boolean shouldDestroyLineDataList = false;
+            foreach (LineData lineData in linesData)
             {
-                double pointAngle = angle * i;
-                float y = objectPosition.y + ((float)Math.Sin(pointAngle) * initialLength);
-                float x = objectPosition.x + ((float)Math.Cos(pointAngle) * initialLength);
-                //print("ITERATE");
-                //print("angle:" + pointAngle +", x: " + x.ToString() + ", y:" + y.ToString());
-                Vector3 point = new Vector3(x, y, 0);
-                NodeData pointData = new NodeData(point, pointAngle);
-                pointCoordinates.Add(pointData);
-            }
-            return pointCoordinates;
-        }
+                float timeChange = Time.deltaTime;
+                float distanceToTravel = timeChange * lineData.speed;
+                lineData.SetOpacityDecay(timeChange);
+                lineData.AddDistanceTravelled(distanceToTravel);
+                int indexCounter = 0;
 
-        void MoveCircle(float distanceToTravel)
-        {
-            //double angle = 2 * Math.PI / circlePoints.Length; // iteration angle in radians
-            for (int i = 0; i < circlePoints.Count; i++)
+
+                for(int i = lineData.from; i < lineData.to; i++)
+                {
+                    double travelAngle = i * anglePerSegment;
+                    float y = lineData.line.GetPosition(indexCounter).y + ((float)Math.Sin(travelAngle) * distanceToTravel);
+                    float x = lineData.line.GetPosition(indexCounter).x + ((float)Math.Cos(travelAngle) * distanceToTravel);
+                    
+                    Vector2 newPosition0 = new Vector2(x, y);
+                    lineData.line.SetPosition(indexCounter, newPosition0);
+                    indexCounter++;
+                }
+
+                if (lineData.opacity < 0)
+                {
+                    shouldDestroyLineDataList = true;
+                    Destroy(lineData.line.gameObject);
+                }
+            }
+            if(shouldDestroyLineDataList)
             {
-                double pointAngle = circlePoints[i].travelingAngle;
-                float y = circlePoints[i].position.y + ((float)Math.Sin(pointAngle) * distanceToTravel);
-                float x = circlePoints[i].position.x + ((float)Math.Cos(pointAngle) * distanceToTravel);
-                Vector3 newPosition = new Vector2(x, y);
-                circlePoints[i].position = newPosition;
-                circleLine.SetPosition(i, newPosition);
+                linesData.Clear();
+                // I think at this point the entire LineCircle object should be destroyed
             }
         }
 
         public Vector3[] GetPointPositions()
         {
-            Vector3[] positions = new Vector3[circleLine.positionCount];
-            circleLine.GetPositions(positions);
+            Vector3[] positions = new Vector3[numberOfPoints];
+            //lineSegments2[0].GetPositions(positions);
             return positions;
         }
 
         public float GetWidth()
         {
-            return circleLine.startWidth;
+            return 0;//lineSegments2[0].startWidth;
         }
-
-        int GetNodeClosestToPointIndex(Vector2 point)
-        {
-            float minDistance = float.PositiveInfinity;
-            int smallestNodeIndex = 0;
-            for(int i = 0; i < circlePoints.Count; i++)
-            {
-                float distance = Vector2.Distance(circlePoints[i].position, point);
-                if(distance < minDistance)
-                {
-                    minDistance = distance;
-                    smallestNodeIndex = i;
-                }
-            }
-            return smallestNodeIndex;
-        }
-
         public void CollisionCalculate(Collision2D col)
         {
             print("CollisionCalculate CollisionCalculate CollisionCalculate CollisionCalculate test");
@@ -176,18 +254,9 @@ namespace LineManipulation
             foreach (ContactPoint2D contact in col.contacts)
             {
                 print(contact.point); // with this point find the closest point in the array
-                int index = GetNodeClosestToPointIndex(contact.point);
-                print(index);
-                //circlePoints[index+1].travelingAngle += Math.PI /2;
-                //circlePoints[index].travelingAngle += Math.PI /2;
-                //circlePoints[index-1].travelingAngle += Math.PI /2;
-
-                circlePoints.RemoveAt(index);
 
                 print(contact.normal);
                 double angleOfContact = Math.Atan2(contact.normal.y, contact.normal.x);
-                ///// line segment stuff
-                ///
             }
         }
 
@@ -198,22 +267,8 @@ namespace LineManipulation
 
             foreach (ContactPoint2D contact in col.contacts)
             {
-                //print(contact.point); // with this point find the closest point in the array
-                //circlePoints[GetNodeClosestToPointIndex(contact.point)].travelingAngle += Math.PI;
-                //print(contact.normal);
                 double angleOfContact = Math.Atan2(contact.normal.y, contact.normal.x);
             }
-        }
-
-        private void OnTriggerEnter2D(Collider2D collision)
-        {
-            print("On trigger enter 2d");
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, transform.forward, out hit))
-            {
-                print("Point of contact: " + hit.point);
-            }
-            //print("aaaaaaa: " + collision.attachedRigidbody.GetPointVelocity().ToString());
         }
     }
 }

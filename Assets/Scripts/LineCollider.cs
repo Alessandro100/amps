@@ -20,7 +20,7 @@ public class LineCollider : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        Vector3[] positions = lc.GetPointPositions();
+        Vector3[] positions = new List<Vector3>().ToArray();// lc.GetPointPositions();
         if (positions.Length >= 2)
         {
             int numberOfLines = positions.Length - 1;
