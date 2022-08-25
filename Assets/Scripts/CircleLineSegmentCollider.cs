@@ -59,4 +59,9 @@ public class CircleLineSegmentCollider : MonoBehaviour
     {
         print("COLLIDE FROM SEGMENT");
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        print("TRIGGERRRRRRR");
+    }
 }

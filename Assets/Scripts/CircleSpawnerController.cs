@@ -4,11 +4,11 @@ using UnityEngine;
 using LineManipulation;
 
 //[RequireComponent(typeof(LineCollider))]
-[RequireComponent(typeof(LineCircle))]
+[RequireComponent(typeof(LineCollider))]
 public class CircleSpawnerController : MonoBehaviour
 {
     //private LineCollider lc;
-    private LineCircle lineCircle;
+    private LineCollider lineCircle;
 
     // Start is called before the first frame update
     void Start()
@@ -17,9 +17,9 @@ public class CircleSpawnerController : MonoBehaviour
         rb.gravityScale = 0;
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.velocity = Vector2.zero;
-        rb.isKinematic = true;
+        //rb.isKinematic = true;
         rb.useFullKinematicContacts = true;
-        lineCircle = GetComponent<LineCircle>();
+        lineCircle = GetComponent<LineCollider>();
     }
 
     // Update is called once per frame
@@ -27,20 +27,5 @@ public class CircleSpawnerController : MonoBehaviour
     {
         //float timeChange = Time.deltaTime;
         // find a way to spawn a lineCircle every 2 seconds
-    }
-
-    void OnCollisionEnter2D()
-    {
-        print("COLLIDE $$$$$");
-    }
-
-    void OnCollisionEnter2D(Collision collision)
-    {
-        print("%%%%%%%%%%%%%%%%%%%%%%%%");
-        foreach (ContactPoint contact in collision.contacts)
-        {
-            print(contact.point);
-            Debug.DrawRay(contact.point, contact.normal, Color.white);
-        }
     }
 }

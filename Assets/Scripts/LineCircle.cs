@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// NEXT STEP -> DETECTING COLLISIONS!
+// NEXT STEP -> OnCollisionEnter2D
 
-class LineData
+public class LineData
 {
     private int _from;
     private int _to;
@@ -47,6 +47,18 @@ class LineData
         line.endColor = c;
     }
 
+    public float GetLineWidth()
+    {
+        return _line.startWidth;
+    }
+
+    public Vector3[] GetLinePositions()
+    {
+        Vector3[] positions = new Vector3[26]; // temp
+        line.GetPositions(positions);
+        return positions;
+    }
+
     public void SetLine(LineRenderer line)
     {
         this._line = line;
@@ -62,9 +74,13 @@ namespace LineManipulation
         public float speed = 0.3f; // 0.3f per second
 
         private List<LineData> linesData;
-        private int numberOfPoints = 50;
+        private int numberOfPoints = 25;
         private float initialDistance = 1f;
         private List<CircleLineSegment> lineSegments;
+        List<double> killNodes = new List<double>(); // list of nodes that were hit
+
+
+        public List<LineData> publicLinesData => linesData;
 
         //TO REMOVE
         float distanceTest = 0;
@@ -88,22 +104,6 @@ namespace LineManipulation
             float timeChange = Time.deltaTime;
             float distance = timeChange * 0.3f;
             distanceTest += distance;
-
-            // this is all a test here
-            if(distanceTest > 1f && !hasHappened)
-            {
-                hasHappened = true;
-                //SIM W/POITN
-                List<double> killNodes = new List<double>();
-                Vector2 SIMULATEDCOLLISION = new Vector2(-3, -3); // will get this from the collision
-                double index = FindIndexOfCollision(SIMULATEDCOLLISION);
-                killNodes.Add(index);
-                List<LineData> newLinesData = GenerateLinesPostCollision(killNodes);
-                Destroy(linesData[0].line.gameObject);
-                linesData.Clear();
-                linesData = new List<LineData>();
-                linesData.AddRange(newLinesData);
-            }
             MoveSegments();
         }
 
@@ -111,9 +111,9 @@ namespace LineManipulation
         {
             float xDiff = collisionPoint.x - transform.position.x;
             float yDiff = collisionPoint.y - transform.position.y;
-            double angle = Math.Atan2(yDiff, xDiff) + (2 * Math.PI);
+            double angle = (Math.Atan2(yDiff, xDiff) + (2 * Math.PI)) % (2 * Math.PI);
             double anglePerIndex = 2 * Math.PI / numberOfPoints;
-            return angle / anglePerIndex;
+            return angle / anglePerIndex; 
         }
 
         List<LineData> GenerateLinesPostCollision(List<double> killNodes)
@@ -136,35 +136,6 @@ namespace LineManipulation
             return lineDataSegments;
         }
 
-        List<CircleLineSegment> DrawCircleV2()
-        {
-            int numberOfPoints = 25;
-            List<CircleLineSegment> circleLineSegments = new List<CircleLineSegment>();
-            double angle = 2 * Math.PI / numberOfPoints; // in radians
-            float initialLength = 1f;
-            GameObject circle = new GameObject();
-            // iteration
-            Vector2 prevPoint = new Vector2(0,0);
-            double prevAngle = 0.0;
-            for (int i = 0; i < numberOfPoints + 1; i++)
-            {
-                double pointAngle = angle * i;
-                float y = transform.position.y + ((float)Math.Sin(pointAngle) * initialLength);
-                float x = transform.position.x + ((float)Math.Cos(pointAngle) * initialLength);
-                Vector2 point = new Vector2(x, y);
-
-                if(i != 0) {
-                    CircleLineSegment lineSegment = circle.AddComponent<CircleLineSegment>();
-                    lineSegment.InitializeValues(prevPoint, point, prevAngle, pointAngle);
-                    circleLineSegments.Add(lineSegment);
-                }
-                prevPoint = new Vector2(point.x, point.y);
-                prevAngle = pointAngle;
-            }
-
-            return circleLineSegments;
-        }
-
         LineData GenerateSegments(int from, int to, float distanceTravelled, float initialOpacity) //drawcircleV3
         {
             GameObject line = new GameObject();
@@ -176,6 +147,7 @@ namespace LineManipulation
             rb.useFullKinematicContacts = true;
             LineRenderer lr = line.GetComponent<LineRenderer>();
             lr.material = new Material(Shader.Find("Sprites/Default"));
+            //print("to: " + to.ToString() + " From: " + from.ToString()); 
             lr.positionCount = to - from;
             AnimationCurve curve = new AnimationCurve();
             curve.AddKey(0.0f, 0.1f);
@@ -235,39 +207,34 @@ namespace LineManipulation
             }
         }
 
-        public Vector3[] GetPointPositions()
-        {
-            Vector3[] positions = new Vector3[numberOfPoints];
-            //lineSegments2[0].GetPositions(positions);
-            return positions;
-        }
+        List<int> indexFound = new List<int>();
 
-        public float GetWidth()
+        void OnCollisionEnter2D(Collision2D col) //OnCollisionStay2D
         {
-            return 0;//lineSegments2[0].startWidth;
-        }
-        public void CollisionCalculate(Collision2D col)
-        {
-            print("CollisionCalculate CollisionCalculate CollisionCalculate CollisionCalculate test");
-            //col.
-
+            
+            
             foreach (ContactPoint2D contact in col.contacts)
             {
-                print(contact.point); // with this point find the closest point in the array
+                print("OnCollisionEnter2D $$$$$");
+                print("CONTACT: " + contact.point.x + " " + contact.point.y);
+                
 
-                print(contact.normal);
-                double angleOfContact = Math.Atan2(contact.normal.y, contact.normal.x);
-            }
-        }
+                //
 
-        void OnCollisionEnter2D(Collision2D col)
-        {
-            print("OnCollisionEnter2D");
-            //col.
-
-            foreach (ContactPoint2D contact in col.contacts)
-            {
-                double angleOfContact = Math.Atan2(contact.normal.y, contact.normal.x);
+                double index = FindIndexOfCollision(col.contacts[0].point);
+                print(index);
+                print("rounded: " + (int)index);
+                if (!indexFound.Contains((int)index))
+                {
+                    print("INDEX FOUND: " + index.ToString());
+                    indexFound.Add((int)index);
+                    killNodes.Add(index);
+                    List<LineData> newLinesData = GenerateLinesPostCollision(killNodes);
+                    Destroy(linesData[0].line.gameObject);
+                    linesData.Clear();
+                    linesData = new List<LineData>();
+                    linesData.AddRange(newLinesData);
+                }
             }
         }
     }

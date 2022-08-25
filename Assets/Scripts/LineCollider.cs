@@ -20,35 +20,36 @@ public class LineCollider : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        Vector3[] positions = new List<Vector3>().ToArray();// lc.GetPointPositions();
-        if (positions.Length >= 2)
+        foreach (LineData lineData in lc.publicLinesData)
         {
-            int numberOfLines = positions.Length - 1;
-            polygonCollider2D.pathCount = numberOfLines;
-
-            for (int i = 0; i < numberOfLines; i++)
+            Vector3[] positions = lineData.GetLinePositions();
+            if (positions.Length >= 2)
             {
-                List<Vector2> currentPositions = new List<Vector2>
+                int numberOfLines = positions.Length - 1;
+                polygonCollider2D.pathCount = numberOfLines;
+
+                for (int i = 0; i < numberOfLines; i++)
+                {
+                    List<Vector2> currentPositions = new List<Vector2>
                 {
                     positions[i],
                     positions[i + 1]
                 };
 
-                List<Vector2> currentColliderPoints = CalculateColliderPoints(currentPositions);
-                polygonCollider2D.SetPath(i, currentColliderPoints.ConvertAll(p => (Vector2)transform.InverseTransformPoint(p)));
+                    List<Vector2> currentColliderPoints = CalculateColliderPoints(currentPositions, lineData.GetLineWidth());
+                    polygonCollider2D.SetPath(i, currentColliderPoints.ConvertAll(p => (Vector2)transform.InverseTransformPoint(p)));
+                }
+            }
+            else
+            {
+                polygonCollider2D.pathCount = 0;
             }
         }
-        else
-        {
-            polygonCollider2D.pathCount = 0;
-        }
+        
     }
 
-    private List<Vector2> CalculateColliderPoints(List<Vector2> positions)
+    private List<Vector2> CalculateColliderPoints(List<Vector2> positions, float width)
     {
-        //Get The Width of the Line
-        float width = lc.GetWidth();
-
         // m = (y2 - y1) / (x2 - x1)
         float m = (positions[1].y - positions[0].y) / (positions[1].x - positions[0].x);
         float deltaX = (width / 2f) * (m / Mathf.Pow(m * m + 1, 0.5f));
@@ -71,7 +72,6 @@ public class LineCollider : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        lc.CollisionCalculate(col);
-        print("COLLIDE");
+        print("COLLIDE bing bong");
     }
 }
