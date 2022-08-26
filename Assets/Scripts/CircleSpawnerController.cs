@@ -3,29 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using LineManipulation;
 
+//[RequireComponent(typeof(LineCircle))]
 //[RequireComponent(typeof(LineCollider))]
-[RequireComponent(typeof(LineCollider))]
 public class CircleSpawnerController : MonoBehaviour
 {
-    //private LineCollider lc;
-    private LineCollider lineCircle;
+    private List<LineCircle> lineCircles;
+    public float period = 0.0f;
+    //private LineCollider lineCircle;
 
     // Start is called before the first frame update
     void Start()
     {
+        gameObject.tag = "line_circle";
         Rigidbody2D rb = gameObject.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0;
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.velocity = Vector2.zero;
-        //rb.isKinematic = true;
+        rb.isKinematic = true;
         rb.useFullKinematicContacts = true;
-        lineCircle = GetComponent<LineCollider>();
+        //lineCircle = GetComponent<LineCollider>();
+        lineCircles = new List<LineCircle>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //float timeChange = Time.deltaTime;
-        // find a way to spawn a lineCircle every 2 seconds
+        if (period > 3f)
+        {
+            LineCircle circle = gameObject.AddComponent<LineCircle>();
+            lineCircles.Add(circle);
+            period = 0;
+        }
+        period += UnityEngine.Time.deltaTime;
     }
 }

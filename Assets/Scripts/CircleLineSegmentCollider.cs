@@ -10,7 +10,7 @@ public class CircleLineSegmentCollider : MonoBehaviour
 
     List<Vector2> colliderPoints = new List<Vector2>();
 
-    // Start is called before the first frame update
+    // Start is called before the first frame updatev
     void Awake()
     {
         lineSegment = GetComponent<CircleLineSegment>();
