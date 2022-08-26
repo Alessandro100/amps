@@ -10,18 +10,18 @@ namespace LineManipulation
 
     public class LineCircle : MonoBehaviour
     {
-        public float speed = 0.3f; // 0.3f per second
-
-        private List<LineData> linesData;
+        // properties of the circle
+        public float speed = 0.3f;
         private int numberOfPoints = 25;
         private float initialDistance = 1f;
-        private List<CircleLineSegment> lineSegments;
+
+        // functionality variable
+        private List<LineData> linesData;
         List<double> killNodes = new List<double>(); // list of nodes that were hit
-        List<int> indexHit = new List<int>(); // concrete
+        List<int> indexHit = new List<int>(); // concrete nodes hit
 
         public List<LineData> publicLinesData => linesData;
 
-        // Start is called before the first frame update
         void Awake()
         {
             LineData initialCircle = GenerateSegments(0, numberOfPoints + 1, initialDistance, 1f);
@@ -29,44 +29,12 @@ namespace LineManipulation
             linesData = new List<LineData> { initialCircle };
         }
 
-        // Update is called once per frame
         void LateUpdate()
         {
             MoveSegments();
         }
 
-        double FindIndexOfCollision(Vector2 collisionPoint)
-        {
-            float xDiff = collisionPoint.x - transform.position.x;
-            float yDiff = collisionPoint.y - transform.position.y;
-            double angle = (Math.Atan2(yDiff, xDiff) + (2 * Math.PI)) % (2 * Math.PI);
-            double anglePerIndex = 2 * Math.PI / numberOfPoints;
-            return angle / anglePerIndex; 
-        }
-
-        //issues
-        List<LineData> GenerateLinesPostCollision(List<double> killNodes)
-        {
-            List<LineData> lineDataSegments = new List<LineData>();
-            int from = 0;
-            int to;
-            killNodes.Sort();
-            foreach (double killNode in killNodes)
-            {
-                to = (int)Math.Floor(killNode);
-                if(from != to)
-                {
-                    LineData lineDataSegment = GenerateSegments(from, to, linesData[0].distanceTravelled, linesData[0].opacity);
-                    lineDataSegments.Add(lineDataSegment);
-                }
-                from = (int)Math.Ceiling(killNode);
-            }
-            LineData finalLineDataSegment = GenerateSegments(from, numberOfPoints + 1, linesData[0].distanceTravelled, linesData[0].opacity);
-            lineDataSegments.Add(finalLineDataSegment);
-            return lineDataSegments;
-        }
-
-        LineData GenerateSegments(int from, int to, float distanceTravelled, float initialOpacity) //drawcircleV3
+        LineData GenerateSegments(int from, int to, float distanceTravelled, float initialOpacity)
         {
             GameObject line = new GameObject();
             line.tag = "line_circle";
@@ -109,34 +77,57 @@ namespace LineManipulation
                 lineData.AddDistanceTravelled(distanceToTravel);
                 int indexCounter = 0;
 
-
-                for(int i = lineData.from; i < lineData.to; i++)
+                for (int i = lineData.from; i < lineData.to; i++)
                 {
                     double travelAngle = i * anglePerSegment;
                     float y = lineData.line.GetPosition(indexCounter).y + ((float)Math.Sin(travelAngle) * distanceToTravel);
                     float x = lineData.line.GetPosition(indexCounter).x + ((float)Math.Cos(travelAngle) * distanceToTravel);
-                    
-                    Vector2 newPosition0 = new Vector2(x, y);
-                    lineData.line.SetPosition(indexCounter, newPosition0);
+                    Vector2 newPosition = new Vector2(x, y);
+                    lineData.line.SetPosition(indexCounter, newPosition);
                     indexCounter++;
                 }
-
                 lineData.UpdateCollider();
-
                 if (lineData.opacity < 0)
                 {
                     shouldDestroyLineDataList = true;
                     Destroy(lineData.line.gameObject);
                 }
             }
-            if(shouldDestroyLineDataList)
+            if (shouldDestroyLineDataList)
             {
                 linesData.Clear();
-                // I think at this point the entire LineCircle object should be destroyed
             }
         }
 
+        double FindIndexOfCollision(Vector2 collisionPoint)
+        {
+            float xDiff = collisionPoint.x - transform.position.x;
+            float yDiff = collisionPoint.y - transform.position.y;
+            double angle = (Math.Atan2(yDiff, xDiff) + (2 * Math.PI)) % (2 * Math.PI);
+            double anglePerIndex = 2 * Math.PI / numberOfPoints;
+            return angle / anglePerIndex; 
+        }
 
+        List<LineData> GenerateLinesPostCollision(List<double> killNodes)
+        {
+            List<LineData> lineDataSegments = new List<LineData>();
+            int from = 0;
+            int to;
+            killNodes.Sort();
+            foreach (double killNode in killNodes)
+            {
+                to = (int)Math.Floor(killNode);
+                if(from != to)
+                {
+                    LineData lineDataSegment = GenerateSegments(from, to, linesData[0].distanceTravelled, linesData[0].opacity);
+                    lineDataSegments.Add(lineDataSegment);
+                }
+                from = (int)Math.Ceiling(killNode);
+            }
+            LineData finalLineDataSegment = GenerateSegments(from, numberOfPoints + 1, linesData[0].distanceTravelled, linesData[0].opacity);
+            lineDataSegments.Add(finalLineDataSegment);
+            return lineDataSegments;
+        }
 
         void OnCollisionEnter2D(Collision2D col) //OnCollisionStay2D
         {
@@ -159,7 +150,6 @@ namespace LineManipulation
                     killNodes.Add(index); 
                 }
             }
-            new WaitForSeconds(1);
             List<LineData> newLinesData = GenerateLinesPostCollision(killNodes);
             foreach (LineData lineData in linesData)
             {

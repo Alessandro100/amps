@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using LineManipulation;
 
-//[RequireComponent(typeof(LineCircle))]
-//[RequireComponent(typeof(LineCollider))]
 public class CircleSpawnerController : MonoBehaviour
 {
     private List<LineCircle> lineCircles;
@@ -21,11 +19,9 @@ public class CircleSpawnerController : MonoBehaviour
         rb.velocity = Vector2.zero;
         rb.isKinematic = true;
         rb.useFullKinematicContacts = true;
-        //lineCircle = GetComponent<LineCollider>();
         lineCircles = new List<LineCircle>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (period > 3f)

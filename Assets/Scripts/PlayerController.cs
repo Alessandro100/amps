@@ -22,18 +22,10 @@ public class PlayerController : MonoBehaviour
             print(theTouch.position.x);
             print(theTouch.position.y);
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(theTouch.position);
-            print("WORLD");
             print(worldPosition.x);
             print(worldPosition.y);
             print(worldPosition.z);
             transform.position = new Vector3(worldPosition.x,worldPosition.y, 0);
-            //transform.position = new Vector3(0, 0, 0);
         }
-
     }
-
-    /*
-     * Trigger = something that will detect an action
-     * Collider = something the object will collide with 
-     */
 }
