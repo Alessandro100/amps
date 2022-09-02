@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
         _homecores = new List<GameObject>();
         GameObject initialHomecore = Instantiate(homecore, new Vector3(1, 1, 1), Quaternion.identity);
         initialHomecore.transform.position = new Vector3(initialHomecore.transform.position.x, initialHomecore.transform.position.y, 0);

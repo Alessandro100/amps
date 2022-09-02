@@ -13,13 +13,18 @@ public class EnemyController : MonoBehaviour
 {
     private Transform target;
     private NavMeshPath path;
+    private SpriteRenderer renderer;
+    List<int> hitByIndexes;
 
+    private double health = 100;
     private float speed = 0.5f;
     private int currentPathIndex = 0;
 
     // Start is called before the first frame update
     void Start()
     {
+        hitByIndexes = new List<int>();
+        renderer = GetComponent<SpriteRenderer>();
         target = GameManager.Instance.homecores[0].transform; // TODO: find the closest homecore
         path = new NavMeshPath();
         bool found = NavMesh.CalculatePath(transform.position, target.position, NavMesh.AllAreas, path);
@@ -42,7 +47,35 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    void closestHomecore()
+    public float DoDamageAmount()
+    {
+        return (float)health * 0.2f;
+    }
+
+    // Getting damaged by line
+    void GetDamaged(double damageAmount)
+    {
+        health -= damageAmount;
+        float opacity = (float)(health / 100);
+        renderer.color = new Color(1f, 1f, 1f, opacity);
+        if (health < 0)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        int collisionIndex = col.gameObject.GetInstanceID();
+        if (col.gameObject.tag == "line_circle_holder" && !hitByIndexes.Contains(collisionIndex))
+        {
+            hitByIndexes.Add(collisionIndex);
+            LineCircle lineCircle = col.gameObject.GetComponent<LineCircle>();
+            GetDamaged(lineCircle.GetDamage());
+        }
+    }
+
+        void closestHomecore()
     {
         
     }

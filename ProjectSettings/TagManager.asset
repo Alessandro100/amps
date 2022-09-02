@@ -7,6 +7,8 @@ TagManager:
   - line_circle
   - homecore
   - enemy
+  - line_circle_spawner
+  - line_circle_holder
   layers:
   - Default
   - TransparentFX
