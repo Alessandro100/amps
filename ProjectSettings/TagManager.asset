@@ -9,6 +9,7 @@ TagManager:
   - enemy
   - line_circle_spawner
   - line_circle_holder
+  - wall
   layers:
   - Default
   - TransparentFX

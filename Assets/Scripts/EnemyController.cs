@@ -27,12 +27,14 @@ public class EnemyController : MonoBehaviour
         renderer = GetComponent<SpriteRenderer>();
         target = GameManager.Instance.homecores[0].transform; // TODO: find the closest homecore
         path = new NavMeshPath();
-        bool found = NavMesh.CalculatePath(transform.position, target.position, NavMesh.AllAreas, path);
+        NavMesh.CalculatePath(transform.position, target.position, NavMesh.AllAreas, path);
     }
 
     // Update is called once per frame
     void Update()
     {
+        currentPathIndex = 0;
+        NavMesh.CalculatePath(transform.position, target.position, NavMesh.AllAreas, path);
         if (currentPathIndex < path.corners.Length)
         {
             if (transform.position == path.corners[currentPathIndex])
