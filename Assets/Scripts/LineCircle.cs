@@ -140,33 +140,30 @@ public class LineCircle : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col)
     {
         //ignore collisions with other line circles
-        if (col.gameObject.tag == "line_circle")
+        if (col.gameObject.tag == "wall" || col.gameObject.tag == "homecore")
         {
-            return;
-        }
-
-
-        foreach (ContactPoint2D contact in col.contacts)
-        {
-            double index = FindIndexOfCollision(col.contacts[0].point);
-            int formattedIndex = (int)index;
-            if (!indexHit.Contains(formattedIndex))
+            foreach (ContactPoint2D contact in col.contacts)
             {
-                indexHit.Add(formattedIndex);
-                killNodes.Add(index); 
+                double index = FindIndexOfCollision(col.contacts[0].point);
+                int formattedIndex = (int)index;
+                if (!indexHit.Contains(formattedIndex))
+                {
+                    indexHit.Add(formattedIndex);
+                    killNodes.Add(index);
+                }
             }
-        }
-        if(linesData.Count > 0)
-        {
-            List<LineData> newLinesData = GenerateLinesPostCollision(killNodes);
-            foreach (LineData lineData in linesData)
+            if (linesData.Count > 0)
             {
-                Destroy(lineData.line.gameObject);
-                Destroy(lineData.polygonCollider2D.gameObject);
+                List<LineData> newLinesData = GenerateLinesPostCollision(killNodes);
+                foreach (LineData lineData in linesData)
+                {
+                    Destroy(lineData.line.gameObject);
+                    Destroy(lineData.polygonCollider2D.gameObject);
+                }
+                linesData.Clear();
+                linesData = new List<LineData>();
+                linesData.AddRange(newLinesData);
             }
-            linesData.Clear();
-            linesData = new List<LineData>();
-            linesData.AddRange(newLinesData);
         }
     }
 

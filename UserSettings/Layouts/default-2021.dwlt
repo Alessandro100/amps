@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1904
     height: 981
   m_ShowMode: 4
-  m_Title: Project
+  m_Title: Game
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 53
+  controlID: 272
 --- !u!114 &3
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: Window
+  m_Name: InspectorWindow
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -68,14 +68,14 @@ MonoBehaviour:
     y: 0
     width: 458
     height: 931
-  m_MinSize: {x: 101, y: 121}
+  m_MinSize: {x: 276, y: 71}
   m_MaxSize: {x: 4001, y: 4021}
-  m_ActualView: {fileID: 12}
+  m_ActualView: {fileID: 14}
   m_Panes:
   - {fileID: 14}
   - {fileID: 12}
-  m_Selected: 1
-  m_LastSelected: 0
+  m_Selected: 0
+  m_LastSelected: 1
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -112,7 +112,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: ProjectBrowser
+  m_Name: ConsoleWindow
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -121,14 +121,14 @@ MonoBehaviour:
     y: 563
     width: 1446
     height: 368
-  m_MinSize: {x: 231, y: 271}
-  m_MaxSize: {x: 10001, y: 10021}
-  m_ActualView: {fileID: 13}
+  m_MinSize: {x: 101, y: 121}
+  m_MaxSize: {x: 4001, y: 4021}
+  m_ActualView: {fileID: 18}
   m_Panes:
   - {fileID: 13}
   - {fileID: 18}
-  m_Selected: 0
-  m_LastSelected: 1
+  m_Selected: 1
+  m_LastSelected: 0
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -224,7 +224,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 200}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 126
+  controlID: 138
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -249,7 +249,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 17
+  controlID: 139
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -305,14 +305,14 @@ MonoBehaviour:
   m_OverlayCanvas:
     m_LastAppliedPresetName: Default
     m_SaveData: []
-  progressMessageClearTime: 25188.6200089
+  progressMessageClearTime: -1
   notificationClearTime: -1
   timeSinceLastRotation: -1
   currentBranchAndRemoteHasUpdate: 0
   currentTrackingStatusHasUpdate: 0
-  currentStatusEntriesHasUpdate: 0
-  repositoryProgressHasUpdate: 0
-  appManagerProgressHasUpdate: 0
+  currentStatusEntriesHasUpdate: 1
+  repositoryProgressHasUpdate: 1
+  appManagerProgressHasUpdate: 1
   changeTab: 5
   activeTab: 5
   initProjectView:
@@ -8348,7 +8348,7 @@ MonoBehaviour:
       changingManually: 0
     hasRemote: 1
     lastCurrentRemoteChangedEvent:
-      updatedTimeString: 2022-09-02T21:08:04.967-04:00
+      updatedTimeString: 2022-09-03T20:00:39.997-04:00
       cacheType: 1
     metricsEnabled: 1
     newRepositoryRemoteUrl: https://github.com/Alessandro100/amps.git
@@ -8362,7 +8362,7 @@ MonoBehaviour:
       newGitEmail: kalessandro14@gmail.com
       needsSaving: 0
       lastCheckUserChangedEvent:
-        updatedTimeString: 2022-09-02T15:50:13.938-04:00
+        updatedTimeString: 0001-01-01T00:00:00.000+00:00
         cacheType: 8
     webTimeout: 3000
     gitTimeout: 5000
@@ -8426,9 +8426,9 @@ MonoBehaviour:
   currentRemoteName: origin
   currentBranch: master
   currentRemoteUrl: https://github.com/Alessandro100/amps.git
-  statusAhead: 3
+  statusAhead: 0
   statusBehind: 0
-  hasItemsToCommit: 0
+  hasItemsToCommit: 1
   isTrackingRemoteBranch: 1
   currentBranchContent:
     m_Text: master
@@ -8439,13 +8439,13 @@ MonoBehaviour:
     m_Image: {fileID: 0}
     m_Tooltip: Url of the origin remote
   lastCurrentBranchAndRemoteChangedEvent:
-    updatedTimeString: 2022-09-02T21:08:04.967-04:00
+    updatedTimeString: 2022-09-03T20:00:39.997-04:00
     cacheType: 1
   lastTrackingStatusChangedEvent:
-    updatedTimeString: 2022-09-02T21:08:04.497-04:00
+    updatedTimeString: 2022-09-03T20:00:40.333-04:00
     cacheType: 5
   lastStatusEntriesChangedEvent:
-    updatedTimeString: 2022-09-02T21:08:04.458-04:00
+    updatedTimeString: 2022-09-03T20:01:34.406-04:00
     cacheType: 6
   pullButtonContent:
     m_Text: Pull
@@ -8463,8 +8463,8 @@ MonoBehaviour:
     m_Text: Fetch
     m_Image: {fileID: 0}
     m_Tooltip: 
-  repositoryProgressValue: 0.06666667
-  repositoryProgressMessage: Updating branches...
+  repositoryProgressValue: 1
+  repositoryProgressMessage: Listing changed files...
   appManagerProgressValue: 1
   appManagerProgressMessage: Initialized
   connections: []
@@ -8510,22 +8510,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Pathfinding/NavMeshPlus-master/Gizmos
+    - Assets/Scripts
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Pathfinding/NavMeshPlus-master/Gizmos
+  - Assets/Scripts
   m_LastFoldersGridSize: -1
   m_LastProjectPath: D:\Unity Projects\2d mobile playground
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 767b0000
-    m_LastClickedID: 31606
-    m_ExpandedIDs: 00000000e0620000e2620000e4620000e6620000e8620000ea620000a26400008c7a000000ca9a3b
+    m_SelectedIDs: 1a630000
+    m_LastClickedID: 25370
+    m_ExpandedIDs: 00000000f8620000fa620000fc620000fe6200000063000002630000106300002063000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -8553,7 +8553,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000e0620000e2620000e4620000e6620000e8620000ea620000
+    m_ExpandedIDs: 00000000f8620000fa620000fc620000fe6200000063000002630000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -8578,8 +8578,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 
-    m_LastClickedInstanceID: 0
+    m_SelectedInstanceIDs: 50620000
+    m_LastClickedInstanceID: 25168
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c62300008e62000098620000
     m_RenameOverlay:
@@ -8681,9 +8681,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 2a170000
-      m_LastClickedID: 0
-      m_ExpandedIDs: be78ffff98d0ffff0af5ffff1efbffff
+      m_SelectedIDs: 48620000
+      m_LastClickedID: 25160
+      m_ExpandedIDs: 26fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -8871,7 +8871,7 @@ MonoBehaviour:
       containerId: overlay-container--right
       floating: 0
       collapsed: 0
-      displayed: 0
+      displayed: 1
       snapOffset: {x: 0, y: 25}
       snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
@@ -8954,9 +8954,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -0.5264958, y: 0.41785988, z: -0.050084718}
+    m_Target: {x: 0.006281525, y: -0.988321, z: -0.60293543}
     speed: 2
-    m_Value: {x: -0.5264958, y: 0.41785988, z: -0.050084718}
+    m_Value: {x: 0.006281525, y: -0.988321, z: -0.60293543}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -9007,9 +9007,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 5.219575
+    m_Target: 7.2753735
     speed: 2
-    m_Value: 5.219575
+    m_Value: 7.2753735
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -9068,7 +9068,7 @@ MonoBehaviour:
   m_ShowGizmos: 0
   m_TargetDisplay: 0
   m_ClearColor: {r: 0, g: 0, b: 0, a: 0}
-  m_TargetSize: {x: 414, y: 736}
+  m_TargetSize: {x: 926, y: 521}
   m_TextureFilterMode: 0
   m_TextureHideFlags: 61
   m_RenderIMGUI: 1
@@ -9077,16 +9077,16 @@ MonoBehaviour:
   m_VSyncEnabled: 0
   m_Gizmos: 0
   m_Stats: 0
-  m_SelectedSizes: 07000000000000000000000000000000000000000000000000000000000000000000000000000000
+  m_SelectedSizes: 01000000000000000000000000000000000000000000000000000000000000000000000000000000
   m_ZoomArea:
     m_HRangeLocked: 0
     m_VRangeLocked: 0
     hZoomLockedByDefault: 0
     vZoomLockedByDefault: 0
-    m_HBaseRangeMin: -207
-    m_HBaseRangeMax: 207
-    m_VBaseRangeMin: -368
-    m_VBaseRangeMax: 368
+    m_HBaseRangeMin: -463
+    m_HBaseRangeMax: 463
+    m_VBaseRangeMin: -260.5
+    m_VBaseRangeMax: 260.5
     m_HAllowExceedBaseRangeMin: 1
     m_HAllowExceedBaseRangeMax: 1
     m_VAllowExceedBaseRangeMin: 1
@@ -9106,7 +9106,7 @@ MonoBehaviour:
       y: 21
       width: 1158
       height: 521
-    m_Scale: {x: 0.70788044, y: 0.70788044}
+    m_Scale: {x: 1, y: 1}
     m_Translation: {x: 579, y: 260.5}
     m_MarginLeft: 0
     m_MarginRight: 0
@@ -9114,12 +9114,12 @@ MonoBehaviour:
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -817.93475
-      y: -368
-      width: 1635.8695
-      height: 736
+      x: -579
+      y: -260.5
+      width: 1158
+      height: 521
     m_MinimalGUI: 1
-  m_defaultScale: 0.70788044
+  m_defaultScale: 1
   m_LastWindowPixelSize: {x: 1158, y: 542}
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1

@@ -5,12 +5,9 @@ using UnityEngine.EventSystems;
 
 public class HomecoreLocationController : MonoBehaviour, IPointerClickHandler
 {
-    public GameObject homecorePrefab;
-
     // Start is called before the first frame update
     void Start()
     {
-        print("start homecore location controller");
     }
 
     // Update is called once per frame
@@ -21,10 +18,11 @@ public class HomecoreLocationController : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(eventData.button == PointerEventData.InputButton.Right)
+        // will have to add a check if the player can afford
+        if (eventData.button == PointerEventData.InputButton.Right)
         {
-            // in the future will have to put a popup
-            Instantiate(homecorePrefab, transform.position, Quaternion.identity);
+            GameManager.Instance.AddHomecore(transform.position);
+            GameManager.Instance.PurchaseObject("homecore");
             Destroy(this.gameObject);
         }
     }

@@ -15,7 +15,6 @@ public class ObjectPlacementManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Surface2D.BuildNavMeshAsync();
     }
 
     // Update is called once per frame
@@ -24,11 +23,13 @@ public class ObjectPlacementManager : MonoBehaviour
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = 0;
 
+        // will have to add a check if the player can afford
         if (Input.GetKeyDown(KeyCode.E) && !isPlacingObject)
         {
             PlaceCircleSpawner(mousePosition);
         }
 
+        // will have to add a check if the player can afford
         if (Input.GetKeyDown(KeyCode.W) && !isPlacingObject)
         {
             PlaceWall(mousePosition);
@@ -44,10 +45,12 @@ public class ObjectPlacementManager : MonoBehaviour
             if (currentPlaceObject.tag == "line_circle_spawner")
             {
                 Instantiate(circleSpawnerPrefab, mousePosition, Quaternion.identity);
+                GameManager.Instance.PurchaseObject("line_circle_spawner");
             }
             if(currentPlaceObject.tag == "wall")
             {
                 Instantiate(wallPrefab, mousePosition, Quaternion.identity);
+                GameManager.Instance.PurchaseObject("wall");
                 Surface2D.UpdateNavMesh(Surface2D.navMeshData);
             }
             Destroy(currentPlaceObject);

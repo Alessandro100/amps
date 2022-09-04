@@ -18,34 +18,36 @@ public class EnemyController : MonoBehaviour
 
     private double health = 100;
     private float speed = 0.5f;
-    private int currentPathIndex = 0;
+    
 
     // Start is called before the first frame update
     void Start()
     {
         hitByIndexes = new List<int>();
         renderer = GetComponent<SpriteRenderer>();
-        target = GameManager.Instance.homecores[0].transform; // TODO: find the closest homecore
         path = new NavMeshPath();
-        NavMesh.CalculatePath(transform.position, target.position, NavMesh.AllAreas, path);
     }
 
     // Update is called once per frame
     void Update()
     {
-        currentPathIndex = 0;
-        NavMesh.CalculatePath(transform.position, target.position, NavMesh.AllAreas, path);
-        if (currentPathIndex < path.corners.Length)
+        int currentPathIndex = 0;
+        SetTargetHomecore();
+        if(target)
         {
-            if (transform.position == path.corners[currentPathIndex])
+            NavMesh.CalculatePath(transform.position, target.position, NavMesh.AllAreas, path);
+            if (currentPathIndex < path.corners.Length)
             {
-                currentPathIndex++;
+                if (transform.position == path.corners[currentPathIndex])
+                {
+                    currentPathIndex++;
+                }
+                Vector3 vectorToTarget = path.corners[currentPathIndex] - transform.position;
+                float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
+                Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+                transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * speed);
+                transform.position = Vector3.MoveTowards(transform.position, path.corners[currentPathIndex], speed * Time.deltaTime);
             }
-            Vector3 vectorToTarget = path.corners[currentPathIndex] - transform.position;
-            float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-            Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-            transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * speed);
-            transform.position = Vector3.MoveTowards(transform.position, path.corners[currentPathIndex], speed * Time.deltaTime);
         }
     }
 
@@ -77,8 +79,30 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-        void closestHomecore()
+    void SetTargetHomecore()
     {
-        
+        float closestTargetDistance = float.MaxValue;
+        NavMeshPath Path = new NavMeshPath();
+        foreach (GameObject homecore in GameManager.Instance.homecores)
+        {
+            if(homecore == null)
+            {
+                continue;
+            }
+            if(NavMesh.CalculatePath(transform.position, homecore.transform.position, NavMesh.AllAreas, Path))
+            {
+                float distance = Vector3.Distance(transform.position, Path.corners[0]);
+                for(int i = 1; i < Path.corners.Length; i++)
+                {
+                    distance += Vector3.Distance(Path.corners[i - 1], Path.corners[i]);
+                }
+
+                if(distance < closestTargetDistance)
+                {
+                    target = homecore.transform;
+                    closestTargetDistance = distance;
+                }
+            }
+        }
     }
 }

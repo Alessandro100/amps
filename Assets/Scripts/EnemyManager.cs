@@ -5,26 +5,31 @@ using UnityEngine.AI;
 
 public class EnemyManager : MonoBehaviour
 {
+    public NavMeshSurface Surface2D;
     public GameObject enemyPrefab;
+
+    private float spawnTime = 2.0f;
     private SpriteRenderer renderer;
-    //public NavMeshSurface Surface2D; // keep lookout
-    //List<GameObject> enemies;
+
 
     // Start is called before the first frame update
     void Start()
     {
         renderer = GetComponent<SpriteRenderer>();
-        //enemy = gameObject.AddComponent<EnemyController>();
-        //enemy.transform.position = new Vector3(0, 0, 0);
-        Instantiate(enemyPrefab, GetRandomEnemyLocation(), Quaternion.identity);
-        Instantiate(enemyPrefab, GetRandomEnemyLocation(), Quaternion.identity);
+        GameSizeChangeCheck();
         Instantiate(enemyPrefab, GetRandomEnemyLocation(), Quaternion.identity);
     }
 
     // Update is called once per frame
     void Update()
     {
-        //Surface2D.BuildNavMeshAsync();
+        GameSizeChangeCheck();
+        if (spawnTime > 3f)
+        {
+            Instantiate(enemyPrefab, GetRandomEnemyLocation(), Quaternion.identity);
+            spawnTime = 0;
+        }
+        spawnTime += UnityEngine.Time.deltaTime;
     }
 
     Vector3 GetRandomEnemyLocation()
@@ -44,6 +49,16 @@ public class EnemyManager : MonoBehaviour
             float xLocation = xBoundary * ((Random.value > 0.5f) ? -1 : 1);
             float yLocation = renderer.bounds.size.x / 2 * randomMultiplier;
             return new Vector3(xLocation, yLocation, 0);
+        }
+    }
+
+    public void GameSizeChangeCheck()
+    {
+        Vector2 localScale = transform.localScale;
+        if (localScale != GameManager.Instance.gameSize)
+        {
+            transform.localScale = GameManager.Instance.gameSize;
+            Surface2D.UpdateNavMesh(Surface2D.navMeshData);
         }
     }
 }
