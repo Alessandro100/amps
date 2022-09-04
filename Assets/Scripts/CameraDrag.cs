@@ -12,11 +12,6 @@ public class CameraDrag : MonoBehaviour
     [SerializeField]
     float CameraSizeMax = 10.0f;
 
-    //[SerializeField]
-    //FixedButton BtnZoomIn;
-    //[SerializeField]
-    //FixedButton BtnZoomOut;
-
     // A property to allow/disallow 
     // panning of camera.
     // You can set panning to be false
@@ -64,12 +59,6 @@ public class CameraDrag : MonoBehaviour
         mCamera = camera;
         mOriginalPosition = mCamera.transform.position;
 
-        // For this demo, we simple take the current camera
-        // and calculate the zoom factor.
-        // Alternately, you may want to set the zoom factor
-        // in other ways. For example, randomize the 
-        // zoom factory between 0 and 1.
-
         mZoomFactor =
           (CameraSizeMax - mCamera.orthographicSize) /
           (CameraSizeMax - CameraSizeMin);
@@ -113,7 +102,18 @@ public class CameraDrag : MonoBehaviour
         {
             Vector3 diff = mDragPos - mCamera.ScreenToWorldPoint(Input.mousePosition);
             diff.z = 0.0f;
-            mCamera.transform.position += diff;
+            float xRightBoundary = GameManager.Instance.gameSize.x / 2;
+            float xLeftBoundary = -1 * xRightBoundary;
+            float yTopBoundary = GameManager.Instance.gameSize.y / 2;
+            float yBottomBoundary = -1 * yTopBoundary;
+
+            Vector3 cameraPositionWithNew = mCamera.transform.position + diff;
+            bool respectsXGameSize = cameraPositionWithNew.x > xLeftBoundary && cameraPositionWithNew.x < xRightBoundary;
+            bool respectsYGameSize = cameraPositionWithNew.y > yBottomBoundary && cameraPositionWithNew.y < yTopBoundary;
+            if (respectsXGameSize && respectsYGameSize)
+            {
+                mCamera.transform.position += diff;
+            }
         }
         if (Input.GetMouseButtonUp(0))
         {
@@ -142,9 +142,6 @@ public class CameraDrag : MonoBehaviour
 
     public void ZoomIn()
     {
-        // For this demo we hardcode 
-        // the increment. You should
-        // avoid hardcoding the value.
         Zoom(mZoomFactor + (CameraSizeMax - CameraSizeMin) * 0.001f);
     }
 

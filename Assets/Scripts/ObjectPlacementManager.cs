@@ -20,6 +20,7 @@ public class ObjectPlacementManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        bool leagalPositionToPlace = true;
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = 0;
 
@@ -37,10 +38,12 @@ public class ObjectPlacementManager : MonoBehaviour
 
         if (currentPlaceObject != null)
         {
+            OnObjectPlacement objectPlacementData = currentPlaceObject.GetComponent<OnObjectPlacement>();
+            leagalPositionToPlace = objectPlacementData.isAllowedToPlace;
             currentPlaceObject.transform.position = mousePosition;
         }
 
-        if (isPlacingObject && Input.GetMouseButtonDown(0)) // left click
+        if (isPlacingObject && Input.GetMouseButtonDown(0) && leagalPositionToPlace) // left click
         {
             if (currentPlaceObject.tag == "line_circle_spawner")
             {
@@ -63,13 +66,13 @@ public class ObjectPlacementManager : MonoBehaviour
         isPlacingObject = true;
         currentPlaceObject = Instantiate(circleSpawnerPrefab, mousePosition, Quaternion.identity);
         currentPlaceObject.GetComponent<CircleSpawnerController>().enabled = false;
-        currentPlaceObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
+        currentPlaceObject.GetComponent<OnObjectPlacement>().enabled = true;
     }
 
     void PlaceWall(Vector3 mousePosition)
     {
         isPlacingObject = true;
         currentPlaceObject = Instantiate(wallPrefab, mousePosition, Quaternion.identity);
-        currentPlaceObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
+        currentPlaceObject.GetComponent<OnObjectPlacement>().enabled = true;
     }
 }
